@@ -18,7 +18,7 @@ All currently connected gamepads can be read using the `Navigator.getGamepads()`
 * index: Unique index in the array of gamepads.
 * mapping: A string telling the developer, if the gamepads conforms to a known mapping. Right now there is only one standard mapping. This means if the browser can man the gamepad to the standard mapping, the string will be "standard".
 * connected: A boolean indicitating if the controller is still connected.
-* buttons: An array of buttons that the controller has. Each entry of the list is a javascript object, containing the `pressed` property and the `value` property. The `pressed` property is a boolean is true if the button is pressed by the user and false otherwise. The `value` property is a float between 0 and 1 which allows the API to support analog buttons.
+* buttons: An array of buttons that the controller has. Each entry of the list is a javascript object, containing the `pressed` property and the `value` property. The `pressed` property is a boolean that is true if the button is pressed by the user and false otherwise. The `value` property is a float between 0 and 1 which allows the API to support analog buttons.
 * axes: An array of axes present on the device. Each entry is a float from -1 to 1.
 * timestamp: A timestamp representing the last time, the data from the gamepad was updated.
 
