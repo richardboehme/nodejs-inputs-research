@@ -8,7 +8,7 @@ This documents collects research about how to integrate different input variants
 
 The web specification (W3C) defines a spec to interact with Gamepads. The Gamepad interface is exposed via the Gamepad Javascript API. The Gamepad API adds events to the Window object to read from several gamepads. Additionally, it introduces a Gamepad object, which allows to read the state of a Gamepad (for example pressed buttons). In contrast to the keyboard events that are exposed via events, reading the state of a Gamepad needs the be done manually in a "game loop". The API limits its scope to gamepads only, meaning it only knows simple button presses and axes movements.
 
-The Gamepad API exposes two events on the Window object: `gamepadconnected` and `gamepaddisconnected`. Those events are fired if a new gamepad is connected to or disconnected from the computer. 
+The Gamepad API exposes two events on the Window object: `gamepadconnected` and `gamepaddisconnected`. Those events are fired if a new gamepad is connected to or disconnected from the computer.
 
 Note: If a gamepad is already connected when visiting a page, the `gamepadconnected` event will be dispatched, if the user presses a button or moves an axis.
 
@@ -32,9 +32,9 @@ For reference see:
 
 ### Other inputs
 
-As mentioned above, the Gamepad API deliberately limits itself to gamepads with buttons and axes. To make access to other devices possible the W3C designed the WebHID API which can be used to access Human Interface Devices other than gamepads. 
+As mentioned above, the Gamepad API deliberately limits itself to gamepads with buttons and axes. To make access to other devices possible the W3C designed the WebHID API which can be used to access Human Interface Devices other than gamepads.
 
-With this API one can request a specific device from the browser. If the device is connected one can add an event listener to the device object, which fires every time data was send from the device. This way it's possible to implement drivers for all devices that implement the HID protocol. 
+With this API one can request a specific device from the browser. If the device is connected one can add an event listener to the device object, which fires every time data was send from the device. This way it's possible to implement drivers for all devices that implement the HID protocol.
 
 Additionally it might be possible to handle inputs from devices that do not support the HID protocol by using either the Web Bluetooth API, the Web Serial API or the WebUSB API.
 
@@ -82,7 +82,7 @@ The resulting program can be found in the `poc` folder of this git repository. I
 npm install && npm start
 ```
 
-When opening, the user gets presented a simple screen telling them what to do in this program and the Developer Tools to see debug information. 
+When opening, the user gets presented a simple screen telling them what to do in this program and the Developer Tools to see debug information.
 
 ![Starting screen of the proof of concept](/images/poc/starting_screen.png)
 
@@ -171,11 +171,11 @@ The name of each gamepad can be obtained by using the `id` attribute of the `Gam
 
 After trying out the PoC the following incomplete list of supported gamepads could be made:
 
-|                                           | Ubuntu                                                | Windows   | MacOS |
-|-------------------------------------------|-------------------------------------------------------|-----------|-------|
-| XBox 360 wired controller                 | :white_check_mark:                                    |           |       |
-| XBox wireless controller                  | :white_check_mark: <br />(after a firmware update)    |           |       |
-| Nintendo Switch Pro Controller / Joycons  | :negative_squared_cross_mark: <br />(work in Firefox) |           |       |
+|                                           | Ubuntu                                                | Windows                                               | MacOS |
+|-------------------------------------------|-------------------------------------------------------|-------------------------------------------------------|-------|
+| XBox 360 wired controller                 | :white_check_mark:                                    | :white_check_mark:                                    |       |
+| XBox wireless controller                  | :white_check_mark: <br />(after a firmware update)    | :white_check_mark: (selbe ID wie XBox 360 Controller) |       |
+| Nintendo Switch Pro Controller / Joycons  | :negative_squared_cross_mark: <br />(work in Firefox) |                                                       |       |
 
 
 ## Further Reading
