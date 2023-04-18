@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+  <title>PoC: Gamepad API</title>
+</head>
+
+<body>
+  <h1>PoC: Gamepad API</h1>
+  <p>Click on "detect" to start scanning connected gamepads and display pressed buttons/axes.</p>
+  <button id="detect-inputs">Detect</button>
+  <div id="pressed-inputs"></div>
+  <script src="./renderer.js"></script>
+</body>
+
+</html>
