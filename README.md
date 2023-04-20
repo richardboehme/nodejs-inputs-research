@@ -171,11 +171,13 @@ The name of each gamepad can be obtained by using the `id` attribute of the `Gam
 
 After trying out the PoC the following incomplete list of supported gamepads could be made:
 
-|                                           | Ubuntu                                                | Windows                                               | MacOS |
-|-------------------------------------------|-------------------------------------------------------|-------------------------------------------------------|-------|
-| XBox 360 wired controller                 | :white_check_mark:                                    | :white_check_mark:                                    |       |
-| XBox wireless controller                  | :white_check_mark: <br />(after a firmware update)    | :white_check_mark: (selbe ID wie XBox 360 Controller) |       |
-| Nintendo Switch Pro Controller / Joycons  | :negative_squared_cross_mark: <br />(work in Firefox) |                                                       |       |
+| Device                                   | Ubuntu                                           | Windows                                               | MacOS (Intel)                                                                                                                                  |
+|------------------------------------------|--------------------------------------------------|-------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| XBox 360 wired controller                | :white_check_mark:                               | :white_check_mark:                                    | :x: (no native support, [3rd party drivers](https://github.com/360Controller/360Controller) deprecated starting with MacOS 11 Big Sur) |
+| XBox wireless controller                 | :white_check_mark:  (after a firmware update)    | :white_check_mark: (selbe ID wie XBox 360 Controller) | :white_check_mark:                                                                                                                     |
+| Nintendo Switch Pro Controller / Joycons | :negative_squared_cross_mark:  (work in Firefox) |                                                       |                                                                                                                                        |
+| Sony Dualshock 4                         |                                                  |                                                       | :white_check_mark:                                                                                                                     |                                                                                                                  |   |                                                       |   :white_check_mark:    |
+
 
 
 ## Further Reading
