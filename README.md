@@ -46,6 +46,36 @@ For reference see:
 
 ## Research on the current state of the TactileCollab project
 
+### Input handling
+
+Currently the TactileCollab project only supports keyboard inputs which exactly one key per configuration. Each configuration can trigger one to five actuators in a specific intensity. They can be configured after entering a room on the right side of the application. All configurations are saved in the configuration file and are loaded on application startup. This means that input configurations are persisted during launches of the program.
+
+When adding a input configuration the user can input various details about the configuration, for example a name, the intensity and so on. Additionally, there is a button that starts scanning for keyboard inputs. On click, the button flips a component boolean attribute. The component has a `keydown` event handler that register key presses if the boolean attribute is true. If a button was pressed, the key will be displayed on the screen and scanning will be stopped. 
+
+If the user saves the information by clicking the submit button, all entered data will be submitted to the `PlayGroundActionTypes.addButtonToGrid` store action. This action generates a unique id for the configuration, finds a free spot in the grid and submits the data via the `IPC_CHANNELS.main.saveKeyBoardButton` event to the IPC api. The IPC api persists the configuration into the configuration file. Finally, the state action submits the `PlayGroundMutations.ADD_ITEM_TO_GRID` action in the store which pushes the configuration to the current list of configurations in memory.
+
+Each configuration is stored in an object of the `KeyBoardButton` interface. This interface contains the following attributes:
+
+* `channels`: Array of actuators that should be triggered.
+* `color`: The color of the configuration, which is used display the configuration in the application.
+* `intensity`: The intensity in which the actuators should be triggered.
+* `name`: The name of the configuration.
+* `key`: The key that must be pressed (as a string).
+* `isActive`: An object storing the current active state of the configuration (more on that later).
+* `i`: The generated unique id.
+* `x`: The x coordinate of the configuration in the grid.
+* `y`: The y coordinate of the configuration in the grid.
+* `w`: The width of the configuration in the grid (defaults to 1).
+* `h`: The height of the configuration in the grid (defaults to 1). 
+
+An input configuration can be used via two actions. The first option is to click on the configuration on the right hand side of the application. The second option is to use the key defined in the configuration. To ensure that the application knows if a configuration is active, the `isActive` object is used. It stores one boolean indicating whether the first option was used called `mouse` and another boolean for the second option called `keyboard`. 
+
+The store provides two actions to activate and to deactivate a configuration called `PlayGroundActionTypes.activateKey` and `PlayGroundActionTypes.deactivateKey` respectively. Each action takes two booleans indicating which input option (mouse or keyboard) was used. 
+
+The actions first retrieve the configuration by the passed key string. Afterwards it compares the `isActive` state of the configuration to the passed booleans. If the booleans match the action will do nothing. Otherwise it will update the `isActive` state of the configuration with the new booleans. If the configuration was not active before (meaning `mouse` and `keyboard` booleans in the `isActive` object are false) and one of the passed in booleans is true an activation event is emitted to the IPC api. For deactivation the configuration must have been inactive before and one of the passed booleans must be true. 
+
+The IPC api handles the input, forwarding the action to the saved actuators and records the action if recording is currently active. It also uses the `key` string in the `updateIntensities` method of the `RoomModule`. 
+
 ### Installing TactileCollab on Ubuntu
 
 #### Bluetooth
