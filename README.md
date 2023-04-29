@@ -209,6 +209,16 @@ After trying out the PoC the following incomplete list of supported gamepads cou
 | Sony Dualshock 4                         |                                                  |                                                       | :white_check_mark:                                                                                                                                                |                                                                                                                  |   |                                                       |   :white_check_mark:    |
 
 
+## Requirements
+
+* Support one or more input devices.
+* Support keyboards and gamepads.
+* Support most used gamepads (XBox and PlayStation)
+* Support detecting newly plugged in gamepads.
+* Support multiple different gamepads.
+* Support multiple same gamepads if possible.
+* Store configured input bindings in a configuration file.
+
 
 ## Further Reading
 
