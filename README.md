@@ -209,7 +209,9 @@ After trying out the PoC the following incomplete list of supported gamepads cou
 | Sony Dualshock 4                         |                                                  |                                                       | :white_check_mark:                                                                                                                                                |                                                                                                                  |   |                                                       |   :white_check_mark:    |
 
 
-## Requirements
+## Expanding the input handling of TactileCollab
+
+### Requirements
 
 * Support one or more input devices.
 * Support keyboards and gamepads.
@@ -219,6 +221,38 @@ After trying out the PoC the following incomplete list of supported gamepads cou
 * Support multiple same gamepads if possible.
 * Store configured input bindings in a configuration file.
 
+### Architecture
+
+```mermaid
+---
+title: Class diagram
+---
+classDiagram
+  class InputManager {
+    -adapters InputAdapter[]
+    +startDetection() void
+    +stopDetection() void
+    +registerAdapter(adapter: InputAdapter) void
+    %% can we cancel this? The input manager is probably a singleton object right?
+    +onInput(callback: (event: InputEvent) => void) void
+  }
+
+  class InputAdapter {
+    +startDetection() void
+    +stopDetection() void
+  }
+
+  class GamepadAdapter {
+  }
+
+  class KeyboardAdapter {
+  }
+
+  InputManager -- InputAdapter
+  GamepadAdapter ..|> InputAdapter
+  KeyboardAdapter ..|> InputAdapter
+```
+[//]: # "Add InputEvent type, add Configuration object that can be serialized and worked with containing Input + Action + Position in Grid, also the code is not class based yet so probably do not want to use classes as well? however they have two classes right? (most of those can be objects anyway)"
 
 ## Further Reading
 
