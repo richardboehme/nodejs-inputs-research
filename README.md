@@ -50,7 +50,7 @@ For reference see:
 
 Currently the TactileCollab project only supports keyboard inputs which exactly one key per configuration. Each configuration can trigger one to five actuators in a specific intensity. They can be configured after entering a room on the right side of the application. All configurations are saved in the configuration file and are loaded on application startup. This means that input configurations are persisted during launches of the program.
 
-When adding a input configuration the user can input various details about the configuration, for example a name, the intensity and so on. Additionally, there is a button that starts scanning for keyboard inputs. On click, the button flips a component boolean attribute. The component has a `keydown` event handler that register key presses if the boolean attribute is true. If a button was pressed, the key will be displayed on the screen and scanning will be stopped. 
+When adding a input configuration the user can input various details about the configuration, for example a name, the intensity and so on. Additionally, there is a button that starts scanning for keyboard inputs. On click, the button flips a component boolean attribute. The component has a `keydown` event handler that register key presses if the boolean attribute is true. If a button was pressed, the key will be displayed on the screen and scanning will be stopped.
 
 If the user saves the information by clicking the submit button, all entered data will be submitted to the `PlayGroundActionTypes.addButtonToGrid` store action. This action generates a unique id for the configuration, finds a free spot in the grid and submits the data via the `IPC_CHANNELS.main.saveKeyBoardButton` event to the IPC api. The IPC api persists the configuration into the configuration file. Finally, the state action submits the `PlayGroundMutations.ADD_ITEM_TO_GRID` action in the store which pushes the configuration to the current list of configurations in memory.
 
@@ -66,15 +66,15 @@ Each configuration is stored in an object of the `KeyBoardButton` interface. Thi
 * `x`: The x coordinate of the configuration in the grid.
 * `y`: The y coordinate of the configuration in the grid.
 * `w`: The width of the configuration in the grid (defaults to 1).
-* `h`: The height of the configuration in the grid (defaults to 1). 
+* `h`: The height of the configuration in the grid (defaults to 1).
 
-An input configuration can be used via two actions. The first option is to click on the configuration on the right hand side of the application. The second option is to use the key defined in the configuration. To ensure that the application knows if a configuration is active, the `isActive` object is used. It stores one boolean indicating whether the first option was used called `mouse` and another boolean for the second option called `keyboard`. 
+An input configuration can be used via two actions. The first option is to click on the configuration on the right hand side of the application. The second option is to use the key defined in the configuration. To ensure that the application knows if a configuration is active, the `isActive` object is used. It stores one boolean indicating whether the first option was used called `mouse` and another boolean for the second option called `keyboard`.
 
-The store provides two actions to activate and to deactivate a configuration called `PlayGroundActionTypes.activateKey` and `PlayGroundActionTypes.deactivateKey` respectively. Each action takes two booleans indicating which input option (mouse or keyboard) was used. 
+The store provides two actions to activate and to deactivate a configuration called `PlayGroundActionTypes.activateKey` and `PlayGroundActionTypes.deactivateKey` respectively. Each action takes two booleans indicating which input option (mouse or keyboard) was used.
 
-The actions first retrieve the configuration by the passed key string. Afterwards it compares the `isActive` state of the configuration to the passed booleans. If the booleans match the action will do nothing. Otherwise it will update the `isActive` state of the configuration with the new booleans. If the configuration was not active before (meaning `mouse` and `keyboard` booleans in the `isActive` object are false) and one of the passed in booleans is true an activation event is emitted to the IPC api. For deactivation the configuration must have been inactive before and one of the passed booleans must be true. 
+The actions first retrieve the configuration by the passed key string. Afterwards it compares the `isActive` state of the configuration to the passed booleans. If the booleans match the action will do nothing. Otherwise it will update the `isActive` state of the configuration with the new booleans. If the configuration was not active before (meaning `mouse` and `keyboard` booleans in the `isActive` object are false) and one of the passed in booleans is true an activation event is emitted to the IPC api. For deactivation the configuration must have been inactive before and one of the passed booleans must be true.
 
-The IPC api handles the input, forwarding the action to the saved actuators and records the action if recording is currently active. It also uses the `key` string in the `updateIntensities` method of the `RoomModule`. 
+The IPC api handles the input, forwarding the action to the saved actuators and records the action if recording is currently active. It also uses the `key` string in the `updateIntensities` method of the `RoomModule`.
 
 ### Installing TactileCollab on Ubuntu
 
@@ -209,16 +209,211 @@ After trying out the PoC the following incomplete list of supported gamepads cou
 | Sony Dualshock 4                         |                                                  |                                                       | :white_check_mark:                                                                                                                                                |                                                                                                                  |   |                                                       |   :white_check_mark:    |
 
 
-## Requirements
+## Expanding the input handling of TactileCollab
 
-* Support one or more input devices.
-* Support keyboards and gamepads.
-* Support most used gamepads (XBox and PlayStation)
-* Support detecting newly plugged in gamepads.
-* Support multiple different gamepads.
-* Support multiple same gamepads if possible.
-* Store configured input bindings in a configuration file.
+### Requirements
 
+- [ ] Support one or more input devices.
+- [ ] Support keyboards and gamepads.
+- [ ] Support most used gamepads (XBox and PlayStation)
+- [ ] Support detecting newly plugged in gamepads.
+- [ ] Support multiple different gamepads.
+- [ ] Support multiple same gamepads if possible.
+- [ ] Store configured input bindings in a configuration file.
+
+### Architecture
+
+#### Input detection
+
+The main goal of the proposed architecture is to abstract away the different ways of interacting with all supported input devices. This can be achieved by implementing the `InputAdapter` interface for each type of device. Those adapter classes can be used to detect the input of the user.
+
+The `InputDetection` class is used to communicate with multiple adapters at once and start detecting user inputs. If an adapter signals a user input, the user provided `onInput` callback is fired with an `InputEvent` object.
+
+An input event contains information about the device and the input that the user provided. Additionally it contains a value that gives information about analog input methods (i.e. analog sticks or back buttons).
+
+The device and the user input each provide a `type` property that can be used to implement a [type predicate](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates) to differentiate between the different device and input type interfaces.
+
+In Javascript class based architectures are pretty uncommon. Because of this the whole architecture could be based on modules instead.
+
+```mermaid
+classDiagram
+  direction LR
+  class InputDetection {
+    -defaultConfiguration()$ InputDetectionConfig
+
+    -InputDetectionConfig config
+    +constructor(config: InputDetectionConfig): InputDetection
+    +start() void
+    +stop() void
+  }
+
+  class InputAdapterConfig {
+    +number axesThreshold
+    +number buttonThreshold
+    +InputEvent => void onInput
+  }
+
+  class InputDetectionConfig {
+    +InputAdapter[] adapters
+  }
+  InputDetectionConfig <|-- InputAdapterConfig
+
+  class InputAdapter {
+    #InputAdapterConfig config
+    +constructor(config: InputAdapterConfig)
+    +startDetection() void
+    +stopDetection() void
+  }
+
+  class GamepadAdapter {
+    +startDetection() void
+    +stopDetection() void
+  }
+
+  class KeyboardAdapter {
+    +startDetection() void
+    +stopDetection() void
+  }
+
+  GamepadAdapter <|-- InputAdapter
+  KeyboardAdapter <|-- InputAdapter
+
+  class InputEvent {
+    +InputDevice device
+    +UserInput input
+    +number value
+  }
+
+  class InputDevice {
+    <<interface>>
+
+    +string type
+  }
+
+  class GamepadDevice {
+    +string type = "gamepad"
+    +string name
+    +number index
+  }
+
+  class KeyboardDevice {
+    +string type = "keyboard"
+  }
+
+  GamepadDevice ..|> InputDevice
+  KeyboardDevice ..|> InputDevice
+
+  class UserInput {
+    <<interface>>
+
+    +string type
+  }
+
+  class KeyInput {
+    +string type = "key"
+    +string key
+  }
+
+  class GamepadButtonInput {
+    +string type = "gamepad_button"
+    +number index
+    +getName() string
+  }
+
+  class GamepadAxisInput {
+    +string type = "gamepad_axis"
+    +number index
+    +getName() string
+  }
+
+  KeyInput ..|> UserInput
+  GamepadButtonInput ..|> UserInput
+  GamepadAxisInput ..|> UserInput
+```
+
+To communicate with the above described API, the API user instantiates a new `InputDetection`. The passed configuration object should contain the `onInput` callback that will be invoked whenever one of the adapters register a user input. The detection class takes care of instantiating the requested adapters.
+
+Now the API user can start a detection by calling the `start()` method on the detection instance. This will start detection in all input adapters. Once a user input is registered by one of the adapters the `onInput` callback will be triggered.
+
+The API user can stop detection at any time using the `stop()` method on the detection instance. After calling `stop()` the `onInput` callback will not be invoked again.
+
+If needed the detection can be resumed and stopped again at any time.
+
+A typical communication sequence is depicted in the below sequence diagram:
+
+
+```mermaid
+sequenceDiagram
+  User ->> InputDetection: const detection = new InputDetection({ onInput })
+  InputDetection ->> KeyboardAdapter: new KeyboardAdapter({ onInput })
+  InputDetection ->> GamepadAdapter: new GamepadAdapter({ onInput })
+
+  Note over User, GamepadAdapter: Start detection
+  User ->> InputDetection: detection.start()
+  InputDetection ->> KeyboardAdapter: keyboardAdapter.startDetection()
+  InputDetection ->> GamepadAdapter: gamepadAdapter.startDetection()
+
+  Note over User, GamepadAdapter: Key pressed on keyboard
+  KeyboardAdapter ->> InputDetection: onInput(inputEvent)
+  InputDetection ->> User: onInput(inputEvent)
+
+  Note over User, GamepadAdapter: Button pressed on gamepad
+  GamepadAdapter ->> InputDetection: onInput(inputEvent)
+  InputDetection ->> User: onInput(inputEvent)
+
+  Note over User, GamepadAdapter: Stop detection
+  User ->> InputDetection: detection.stop()
+  InputDetection ->> KeyboardAdapter: adapter.stopDetection()
+  KeyboardAdapter ->> GamepadAdapter: adapter.stopDetection()
+```
+
+
+#### Saving input bindings
+
+User inputs are used to trigger specific actions in the application. The combination of an user input and a list of actions are represented by `InputBinding` object.
+
+Each `InputBinding` gets a unique id at creation time. This is used to identify each binding in the application. Additionally, the user can choose a name for the binding and a color which is used to display the binding to the user. After creating a binding it is displayed on a grid. The grid position is also stored in the binding object. Finally, each binding object knows which device and which input triggers it's actions and which actions it should perform.
+
+Each action is identified by a `TactileAction` instance. Currently there is only one type of action - a `TriggerActuatorAction` - that triggers one specific actuator with a specific intensity. Later on other actions could be added by extending the `TactileAction` type.
+
+To save the binding objects to disk one can use the built-in functions `JSON.stringify(obj)` and `JSON.parse(str)` can be used.
+
+An overview of all related classes and objects can be found in the diagram below:
+
+
+```mermaid
+classDiagram
+  direction TB
+  class InputBinding {
+    +string uid
+    +string? name
+    +string color
+    +GridPosition position
+    +InputDevice device
+    +UserInput input
+    +TactileAction[] actions
+  }
+
+  class GridPosition {
+    +number x
+    +number y
+    +number w
+    +number h
+  }
+
+  class TactileAction {
+    <<interface>>
+
+    +string type
+  }
+
+  class TriggerActuatorAction {
+    +string type = "trigger_actuator"
+    +number channel
+    +number intensity
+  }
+  TriggerActuatorAction ..|> TactileAction
+```
 
 ## Further Reading
 
