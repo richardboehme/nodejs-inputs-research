@@ -398,7 +398,7 @@ sequenceDiagram
 
 User inputs are used to trigger specific actions in the application. The combination of an user input and a list of actions are represented by the `InputBinding` object.
 
-Each `InputBinding` gets a unique id at creation time. This is used to identify each binding in the application. Additionally, the user can choose a name for the binding and a color which is used to display the binding to the user. After creating a binding it is displayed on a grid. The grid position is also stored in the binding object. Finally, each binding object knows  which input triggers it's actions and which actions it should perform.
+Each `InputBinding` gets a unique id at creation time. This is used to identify each binding in the application. Additionally, the user can choose a name for the binding and a color which is used to display the binding to the user. After creating a binding it is displayed on a grid. The grid position is also stored in the binding object. Finally, each binding object knows  which inputs trigger it's actions and which actions it should perform.
 
 All bindings are grouped by their device. This means there is one `InputDeviceBindings` object for each device that contains the bindings that are defined for the specific device. In the configuration file those should be used as the top-level data structure.
 
@@ -422,7 +422,7 @@ classDiagram
     +string? name
     +string color
     +GridPosition position
-    +UserInput input
+    +UserInput[] input
     +TactileAction[] actions
   }
 
