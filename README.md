@@ -102,6 +102,32 @@ For reference see:
 * [Noble documentation](#ref-noble-documentation)
 * [Issue about Noble with Electron](#ref-noble-issue-comment)
 
+### Cannot access resource files
+
+The application communicates with all connected devices using the protobuf protocol. To send such a method protobuf requires a `.proto` file that defines message types to send.
+
+In case of this application the `.proto` file is called `vtproto.proto` and is normally copied to a system-specific resource folder by the electron builder process. However when developing using the development server the file will not be copied which results in an error when trying to load the file.
+
+The solution is to define the path to this file dependent on the node environment. If we are running in production, the file path should point to the resource directory. When not running in production, the path should point the local `src` directory.
+
+```js
+const protoPath = process.env.NODE_ENV == "production" ? path.join(process.resourcesPath, "extraResources/vtproto.proto") : "src/protobuf/vtproto.proto";
+```
+
+This solution was found in a github issue discussing a similar problem: https://github.com/nklayman/vue-cli-plugin-electron-builder/issues/1026
+
+In the end, this fix is not needed anymore because the project moved away from using protobuf.
+
+### globalstack.at is not a function
+
+After connecting a device and entering the room, the application stopped working and threw a JavaScript error about the `at` function not being defined on some stack object.
+
+The stack object was a plain JavaScript array, but the `at` function on arrays were only implemented since Chrome 92. However, the Chrome binary shipped with the electron version of our application was older and thus does not implement the `at` function.
+
+The function was used by the vuetify package. Due to the `package-lock.json` not being committed to the repository, I downloaded a newer version of this package which required a newer Chrome version. By strictly setting the version of vuetify to an older version, this issue could be fixed.
+
+In the future it would definitely be useful to commit the `package-lock.json` to the repository to avoid such issues.
+
 ## PoC: Implementing the Gamepad API in NodeJS
 
 To show off how supporting gamepads would look like, a proof of concept (PoC) should be implemented. The PoC should make it possible to detect button presses and axes movements of all controllers available to the application. The PoC should be implemented as a simple Electron app.
