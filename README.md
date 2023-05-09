@@ -396,13 +396,15 @@ sequenceDiagram
 
 #### Saving input bindings
 
-User inputs are used to trigger specific actions in the application. The combination of an user input and a list of actions are represented by `InputBinding` object.
+User inputs are used to trigger specific actions in the application. The combination of an user input and a list of actions are represented by the `InputBinding` object.
 
-Each `InputBinding` gets a unique id at creation time. This is used to identify each binding in the application. Additionally, the user can choose a name for the binding and a color which is used to display the binding to the user. After creating a binding it is displayed on a grid. The grid position is also stored in the binding object. Finally, each binding object knows which device and which input triggers it's actions and which actions it should perform.
+Each `InputBinding` gets a unique id at creation time. This is used to identify each binding in the application. Additionally, the user can choose a name for the binding and a color which is used to display the binding to the user. After creating a binding it is displayed on a grid. The grid position is also stored in the binding object. Finally, each binding object knows  which input triggers it's actions and which actions it should perform.
+
+All bindings are grouped by their device. This means there is one `InputDeviceBindings` object for each device that contains the bindings that are defined for the specific device. In the configuration file those should be used as the top-level data structure.
 
 Each action is identified by a `TactileAction` instance. Currently there is only one type of action - a `TriggerActuatorAction` - that triggers one specific actuator with a specific intensity. Later on other actions could be added by extending the `TactileAction` type.
 
-To save the binding objects to disk one can use the built-in functions `JSON.stringify(obj)` and `JSON.parse(str)` can be used.
+To save the device binding objects to disk one can use the built-in functions `JSON.stringify(obj)` and `JSON.parse(str)`.
 
 An overview of all related classes and objects can be found in the diagram below:
 
@@ -410,12 +412,16 @@ An overview of all related classes and objects can be found in the diagram below
 ```mermaid
 classDiagram
   direction TB
+  class InputDeviceBindings {
+    +InputDevice device
+    +InputBinding[] bindings
+  }
+
   class InputBinding {
     +string uid
     +string? name
     +string color
     +GridPosition position
-    +InputDevice device
     +UserInput input
     +TactileAction[] actions
   }
