@@ -240,12 +240,13 @@ After trying out the PoC the following incomplete list of supported gamepads cou
 ### Requirements
 
 - [ ] Support one or more input devices.
-- [ ] Support keyboards and gamepads.
+- [ ] Keep support for keyboards.
 - [ ] Support most used gamepads (XBox and PlayStation)
-- [ ] Support detecting newly plugged in gamepads.
-- [ ] Support multiple different gamepads.
-- [ ] Support multiple same gamepads if possible.
+- [ ] Support scanning for inputs on newly plugged in gamepads without restarting the application.
+- [ ] Support multiple different gamepads in one session.
+- [ ] Support multiple same gamepads on one session if possible.
 - [ ] Store configured input bindings in a configuration file.
+- [ ] Load stored input bindings on application start and assign them to connected input devices.
 
 ### Architecture
 
