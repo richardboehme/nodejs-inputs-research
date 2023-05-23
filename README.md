@@ -233,7 +233,7 @@ After trying out the PoC the following incomplete list of supported gamepads cou
 | XBox wireless controller                 | :white_check_mark: (after a firmware update)     | :white_check_mark: (same id as XBox 360 Controller)   | :white_check_mark:                                                                                                                                                |
 | Nintendo Switch Pro Controller / Joycons | :negative_squared_cross_mark: (work in Firefox)  |                                                       |                                                                                                                                                                   |
 | Sony Dualshock 4                         |                                                  |                                                       | :white_check_mark:                                                                                                                                                |                                                                                                                  |   |                                                       |   :white_check_mark:    |
-
+| Steel Series Nimbus+                     |                                                  |                                                       | :white_check_mark:|    
 
 ## Expanding the input handling of TactileCollab
 
